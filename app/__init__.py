@@ -20,7 +20,7 @@ import os
 from logging.handlers import SMTPHandler, RotatingFileHandler
 
 """
-To test this, use:
+To test logging to email, use:
 (venv) $ python -m smtpd -n -c DebuggingServer localhost:8025
 and set:
 export MAIL_SERVER=localhost
@@ -69,7 +69,7 @@ if not app.debug:
     app.logger.addHandler(file_handler)
 
     app.logger.setLevel(logging.INFO)
-    app.logger.info('Microblog Startup')
+    app.logger.info('Microblog startup')
     
 
 

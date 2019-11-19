@@ -75,3 +75,11 @@ sqlalchemy.exc.IntegrityError: (sqlite3.IntegrityError) UNIQUE constraint failed
 [parameters: ('susan', "Hi there! I'm the developer of this program. ", 3)]
 (Background on this error at: http://sqlalche.me/e/gkpj)
 2019-11-18 14:19:50,901 INFO: Microblog Startup [in /Users/noahcg/Desktop/microblog/app/__init__.py:72]
+2019-11-18 14:46:20,478 INFO: Microblog Startup [in /Users/noahcg/Desktop/microblog/app/__init__.py:72]
+2019-11-18 16:27:07,418 INFO: Microblog Startup [in /Users/noahcg/Desktop/microblog/app/__init__.py:72]
+2019-11-18 16:28:08,345 INFO: Microblog Startup [in /Users/noahcg/Desktop/microblog/app/__init__.py:72]
+2019-11-18 16:29:09,701 INFO: Microblog Startup [in /Users/noahcg/Desktop/microblog/app/__init__.py:72]
+2019-11-19 11:59:15,019 INFO: Microblog Startup [in /Users/noahcg/Desktop/microblog/app/__init__.py:72]
+2019-11-19 11:59:27,176 INFO: Microblog Startup [in /Users/noahcg/Desktop/microblog/app/__init__.py:72]
+2019-11-19 12:04:02,157 INFO: Microblog startup [in /Users/noahcg/Desktop/microblog/app/__init__.py:72]
+2019-11-19 12:04:13,721 INFO: Microblog startup [in /Users/noahcg/Desktop/microblog/app/__init__.py:72]
