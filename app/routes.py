@@ -1,41 +1,51 @@
 # The routes are different URLs that the application can implement
 # In Flask, application routes are written as Python functions, which
 #   are called view functions.
-# View functions are mapp to one or more route URLs so Flask knows what
+# View functions are mapped to one or more route URLs so Flask knows what
 #   logic to implement when a client requests a certain URL.
-from flask import render_template, flash, redirect, url_for, request
+from flask import render_template, flash, redirect, url_for, request, jsonify
 from app import app, db
-from app.forms import LoginForm, RegistrationForm, EditProfileForm
+from app.forms import LoginForm, RegistrationForm, EditProfileForm, PostForm
 from flask_login import current_user, login_user, logout_user, login_required
-from app.models import User
+from app.models import User, Post
 from werkzeug.urls import url_parse
 from datetime import datetime
+
+# the name of the view function is equivalent to the name of the html file
+# it is also contained within the decorator 
 
 
 # decorators are a unique Pythonic thing
 # they're often used as callbacks for certain events
-@app.route('/')
-
-@app.route('/index')
+@app.route('/', methods=['GET', 'POST'])
+@app.route('/index', methods=['GET', 'POST'])
 # this decorator is imported by flask_login, prevents people from accessing
 #   index that haven't logged in first. 
 @login_required
 def index():
-    posts = [
-        {
-            'author': {'username': 'John'},
-            'body': 'Beautiful day in Portland!'
-        },
-        {
-            'author': {'username': 'Susan'},
-            'body': 'The Avengers movie was so cool!'
-        },
-        {
-            'author': {'username': 'Rob'},
-            'body': 'Studying sucks!'
-        }
-    ]
-    return render_template('index.html', title='Home', posts=posts)
+    form = PostForm()
+    if form.validate_on_submit():
+        post = Post(body=form.post.data, author=current_user)
+        db.session.add(post)
+        db.session.commit()
+        flash('Your post is now live!')
+        # it is standard practice to respond to a POST request with a redirect
+        return redirect(url_for('index'))
+    page = request.args.get('page', 1, type=int)
+    # instead of the .all() method, I will now be using paginate 
+    # using the paginate function returns an object of class paginate
+    # .items is an attribute of the object, that contains the list of 
+    #       all the items retrieved for the selected page
+    posts = current_user.followed_posts().paginate(
+        page, app.config['POSTS_PER_PAGE'], False)
+    next_url = url_for('index', page=posts.next_num) \
+        if posts.has_next else None
+    prev_url = url_for('index', page=posts.prev_num) \
+        if posts.has_prev else None
+    return render_template('index.html', title='Home', form=form,
+                           posts=posts.items, next_url=next_url,
+                           prev_url=prev_url)
+
 
 # these additional arguments 'methods' overwrite the default
 @app.route('/login', methods=['GET', 'POST'])
@@ -71,6 +81,15 @@ def logout():
     return redirect(url_for('index'))
 
 
+@app.route('/joe')
+def joe():
+    param = request.args.get('foo','you didnt send anything')
+    return jsonify({
+        'input': param,
+        'output': param.upper()
+    })
+
+
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if current_user.is_authenticated:
@@ -93,11 +112,17 @@ def user(username):
     # query sends a message to the database
     # the .first_or_404() method lets me raise an exception if user is not found
     user = User.query.filter_by(username=username).first_or_404()
-    posts = [
-        {'author': user, 'body': 'Test post #1'},
-        {'author': user, 'body': 'Test post #2'}
-    ]
-    return render_template('user.html', user=user, posts=posts)
+    page = request.args.get('page', 1, type=int)
+    # paginate takes in 1) the first page number, 2) num of items per page
+    #       AND, 3) an error flag 
+    posts = user.posts.order_by(Post.timestamp.desc()).paginate(
+        page, app.config['POSTS_PER_PAGE'], False)
+    next_url = url_for('user', username=user.username, page=posts.next_num) \
+        if posts.has_next else None
+    prev_url = url_for('user', username=user.username, page=posts.prev_num) \
+        if posts.has_prev else None
+    return render_template('user.html', user=user, posts=posts.items,
+                            next_url=next_url, prev_url=prev_url)
 
 
 @app.before_request
@@ -125,6 +150,58 @@ def edit_profile():
         form.username.data = current_user.username
         form.about_me.data = current_user.about_me
     return render_template('edit_profile.html', title='Edit Profile', form=form)
+
+
+@app.route('/follow/<username>')
+@login_required
+def follow(username):
+    user = User.query.filter_by(username=username).first()
+    # error checking
+    if user is None:
+        flash('User {} not found.'.format(username))
+        return redirect(url_for('index'))
+    if user == current_user:
+        flash('You cannot follow yourself!')
+        return redirect(url_for('user', username=username))
+    current_user.follow(user)
+    db.session.commit()
+    flash('You are following {}!'.format(username))
+    return redirect(url_for('user', username=username))
+
+
+@app.route('/unfollow/<username>')
+@login_required
+def unfollow(username):
+    user = User.query.filter_by(username=username).first()
+    # error checking
+    if user is None:
+        flash('User {} not found.'.format(username))
+        return redirect(url_for('index'))
+    if user == current_user:
+        flash('You cannot unfollow yourself!')
+        return redirect(url_for('user', username=username))
+    current_user.unfollow(user)
+    db.session.commit()
+    flash('You are not following {}.'.format(username))
+    return redirect(url_for('user', username=username))
+
+
+@app.route('/explore')
+@login_required
+def explore():
+    page = request.args.get('page', 1, type=int)
+    posts = Post.query.order_by(Post.timestamp.desc()).paginate(
+        page, app.config['POSTS_PER_PAGE'], False)
+    next_url = url_for('explore', page=posts.next_num) \
+        if posts.has_next else None
+    prev_url = url_for('explore', page=posts.prev_num) \
+        if posts.has_prev else None
+    # this is the same call as the main page, but without the form 
+    return render_template('index.html', 
+                            title='Explore', 
+                            posts=posts.items,
+                            next_url=next_url,
+                            prev_url=prev_url)
 
 
 
