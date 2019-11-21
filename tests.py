@@ -7,7 +7,8 @@ from app.models import User, Post
 #       to work with additional changes being made
 
 class UserModelCase(unittest.TestCase):
-    # this prevents the unittests from using the regular database that we use for development
+
+    # setup prevents the unittests from using the regular database that we use for development
     # this avoids the error that Jack faced when one of his coders were editing the software
     def setUp(self):
         app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite://'
@@ -55,7 +56,6 @@ class UserModelCase(unittest.TestCase):
         self.assertEqual(u1.followed.count(), 0)
         self.assertEqual(u2.followers.count(), 0)
 
-    
     def test_follow_posts(self):
         # creates four users
         u1 = User(username='john', email='john@example.com')
@@ -93,6 +93,8 @@ class UserModelCase(unittest.TestCase):
         self.assertEqual(f2, [p2, p3])
         self.assertEqual(f3, [p3, p4])
         self.assertEqual(f4, [p4])
+
+
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)
