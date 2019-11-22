@@ -54,3 +54,5 @@ Traceback (most recent call last):
 smtplib.SMTPServerDisconnected: please run connect() first
 2019-11-21 16:28:58,171 INFO: Microblog startup [in /Users/noahcg/Desktop/microblog/app/__init__.py:74]
 2019-11-21 16:31:54,167 INFO: Microblog startup [in /Users/noahcg/Desktop/microblog/app/__init__.py:74]
+2019-11-22 16:24:40,146 INFO: Microblog startup [in /Users/noahcg/Desktop/microblog/app/__init__.py:74]
+2019-11-22 16:25:01,985 INFO: Microblog startup [in /Users/noahcg/Desktop/microblog/app/__init__.py:74]
