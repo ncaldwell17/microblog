@@ -4,7 +4,7 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 class Config(object):
     # these are configuration settings
 
-    # my SECRET_KEY is an import part of most Flask apps
+    # my SECRET_KEY is an important part of most Flask apps
     # Flask and its extensions used it as a crypto key to generate signatures
     # the Flask-WTF uses it to protect web forms against CSRF Attacks
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'you-will-never-guess'

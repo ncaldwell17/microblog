@@ -59,3 +59,5 @@ smtplib.SMTPServerDisconnected: please run connect() first
 2019-11-22 16:48:25,018 INFO: Microblog startup [in /Users/noahcg/Desktop/microblog/app/__init__.py:75]
 2019-11-22 20:56:11,815 INFO: Microblog startup [in /Users/noahcg/Desktop/microblog/app/__init__.py:76]
 2019-11-23 15:52:49,351 INFO: Microblog startup [in /Users/noahcg/Desktop/microblog/app/__init__.py:76]
+2019-11-23 17:25:08,280 INFO: Microblog startup [in /Users/noahcg/Desktop/microblog/app/__init__.py:76]
+2019-11-25 15:18:24,330 INFO: Microblog startup [in /Users/noahcg/Desktop/microblog/app/__init__.py:76]
